@@ -73,7 +73,7 @@ def create_dlt_source(
                 table_names=[table_name], 
             )
             
-            # Récupérer la ressource spécifique
+            # Récupérer la ressource
             resource = getattr(source, table_name)
             
             logger.info(f"✅ Source DLT créée pour {table_name}")

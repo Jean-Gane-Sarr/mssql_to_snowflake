@@ -6,7 +6,7 @@ from mssql_data_nmbai.defs.dlt_mssql_source import equipment_source, facture_sou
 #from mssql_data_nmbai.defs.load_bcp_copy_into import run_pipeline, Config
 # Pipeline DLT
 pipeline = dlt.pipeline(
-    pipeline_name="mssql_to_snowflake_pipeline_",
+    pipeline_name="mssql_to_snowflake_pipeline",
     destination="snowflake",
     dataset_name="equipement",
     progress="log",

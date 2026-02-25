@@ -6,7 +6,6 @@ from datetime import datetime
 
 from dotenv import load_dotenv
 import logging
-from bcp_wsl import BCPExporter
 from config import Config
 import os
 import subprocess
@@ -14,6 +13,7 @@ import time
 from pathlib import Path
 import logging
 from dotenv import load_dotenv
+from typing import Tuple, Optional
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')

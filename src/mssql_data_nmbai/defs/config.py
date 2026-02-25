@@ -30,7 +30,7 @@ class Config:
     
     # Fichier de sortie
     OUTPUT_PATH = Path(os.getenv("OUTPUT_PATH", "/tmp/mssql_export.csv"))    
-    DELIMITER = ","
+    DELIMITER = "|"
     
     # Snowflake
     SF_ACCOUNT = os.getenv("SNOWFLAKE_ACCOUNT", "dg63583.eu-west-1")
@@ -61,17 +61,6 @@ class Config:
 
     BCP_PATH = r"/opt/mssql-tools/bin/bcp"
 
-# ===EXPORT BCP (équivalent code PowerShell) ============
-def windows_to_wsl_path(windows_path: str) -> str:
-    """Convertit un chemin Windows en chemin WSL (/mnt/c/... style)."""
-    path = Path(windows_path)
-    if ":" in str(path):
-        drive, rest = str(path).split(":", 1)
-        drive = drive.lower()
-        rest = rest.replace("\\", "/").lstrip("/")
-        return f"/mnt/{drive}/{rest}"
-    else:
-        return str(path)
 
 class BCPExporter:
     """Exporter BCP SQL Server → CSV, compatible WSL et Linux natif."""
@@ -103,13 +92,25 @@ class BCPExporter:
         logger.info(f"   Mode: {'WSL' if use_wsl else 'Natif'}")
         logger.info(f"   BCP: {self.bcp_path}")
         logger.info(f"   Serveur: {self.server}")
+    
+    # ===EXPORT BCP (équivalent code PowerShell) ============
+    def windows_to_wsl_path(windows_path: str) -> str:
+        """Convertit un chemin Windows en chemin WSL (/mnt/c/... style)."""
+        path = Path(windows_path)
+        if ":" in str(path):
+            drive, rest = str(path).split(":", 1)
+            drive = drive.lower()
+            rest = rest.replace("\\", "/").lstrip("/")
+            return f"/mnt/{drive}/{rest}"
+        else:
+            return str(path)
 
     def export(
         self,
         table_name: str,
         output_path: Path,
         query: str = None,
-        delimiter: str = ",",
+        delimiter: str = "|",
         top_n: int = 10000000,
     ) -> Tuple[bool, float, float]:
         """
@@ -160,7 +161,7 @@ class BCPExporter:
                 "-c",              # caractère standard
                 "-C", "65001",     # UTF-8
                 "-t", delimiter,
-                "-r", "\\n",
+                "-r", "\n",
                 "-S", connection_string,
                 "-d", self.database,
                 "-U", self.username,
@@ -277,7 +278,7 @@ def test_bcp_connection():
             table_name = "dbo.v_Inventory_Parts_Ops",
             query=test_query,
             output_path=test_output,
-            delimiter=","
+            delimiter="|"
         )
         
         logger.info("✅ Test de connexion BCP réussi!")
