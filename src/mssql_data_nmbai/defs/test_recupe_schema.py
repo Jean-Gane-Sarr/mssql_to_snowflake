@@ -149,7 +149,7 @@ def extract_mssql_table_schema(table_name: str) -> List[Tuple[str, str]]:
     
     engine = get_mssql_engine()
     
-    # ✅ CORRECTION: Utiliser with + text()
+    # Utiliser with + text()
     sql_query = text("""
         SELECT 
             COLUMN_NAME,
