@@ -6,9 +6,9 @@ from datetime import datetime
 import snowflake.connector
 from dotenv import load_dotenv
 import logging
-from config import Config, BCPExporter, export_mssql_bcp
+from mssql_data_nmbai.defs.config import Config, BCPExporter, export_mssql_bcp
 ##from mssql import export_mssql_bcp
-from snowflake_dest import setup_snowflake,upload_to_stage,copy_into_table
+from mssql_data_nmbai.defs.snowflake_dest import setup_snowflake,upload_to_stage,copy_into_table
 
 load_dotenv()
 logging.basicConfig(
@@ -23,7 +23,8 @@ logger = logging.getLogger(__name__)
 
 def extract_mssql_data(
     mssql_table_name: str, 
-    snowflake_table_name: str
+    snowflake_table_name: str,
+    logger
 ):
     """
     Exécution complète du pipeline
@@ -34,18 +35,21 @@ def extract_mssql_data(
     
     logger.info("\n" + "=" * 80)
     logger.info("🚀 PIPELINE MSSQL → SNOWFLAKE")
-    logger.info("📤➡️❄️  Méthode: BCP + COPY INTO (PowerShell)")
+    logger.info("📤➡️❄️  Méthode: BCP + COPY INTO")
     logger.info("=" * 80 + "\n")
     
     try:
         # 1. Export BCP
-        export_mssql_bcp(table_name = mssql_table_name)
+        export_mssql_bcp(table_name = mssql_table_name, logger = logger)
         # Setup Snowflake (Créer file_format, stage et table)
-        setup_snowflake(mssql_table_name = mssql_table_name, snowflake_table_name = snowflake_table_name)
+        setup_snowflake(mssql_table_name = mssql_table_name, 
+                        snowflake_table_name = snowflake_table_name,
+                        logger = logger
+        )
         # Upload dans le staging (On a utilisé CSV mais peut être changé en parquet dans snowflake_dest.py)
-        upload_to_stage()
+        upload_to_stage(logger = logger)
         # COPY INTO stage -> table
-        result = copy_into_table(table_name = snowflake_table_name)        
+        result = copy_into_table(table_name = snowflake_table_name, logger = logger)        
         # Durée totale
         total_duration = time.time() - start_time
         
@@ -63,8 +67,9 @@ def extract_mssql_data(
         raise
 
 
-if __name__ == "__main__":
-    extract_mssql_data(
-        mssql_table_name = "V_Inventory_Parts_Ops",
-        snowflake_table_name= "AI_V_Inventory_Parts_Ops"
-    )
+#if __name__ == "__main__":
+#    extract_mssql_data(
+#        mssql_table_name = "V_Inventory_Parts_Ops",
+#        snowflake_table_name= "AI_V_Inventory_Parts_Ops",
+#        logger
+#    )

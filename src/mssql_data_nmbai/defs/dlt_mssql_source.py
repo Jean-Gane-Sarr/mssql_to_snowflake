@@ -12,6 +12,7 @@ import time
 import logging
 import unicodedata
 import re
+from mssql_data_nmbai.defs.load_bcp_copy_into import extract_mssql_data
 
 logger = logging.getLogger(__name__)
 
@@ -199,27 +200,48 @@ def gcm_retour_donnees_olga_source():
 
 
 ##### v_Inventory_Parts_Ops
-@dlt.resource(
-    name="v_Inventory_Parts_Ops",
-    write_disposition="replace",
-)
-def get_inventory_parts_ops_data() -> DltResource:
-    resource = create_dlt_source("v_Inventory_Parts_Ops")
-     # Apply hints pour les colonnes décimales
+##@dlt.resource(
+##    name="v_Inventory_Parts_Ops",
+##    write_disposition="replace",
+##)
+##def get_inventory_parts_ops_data() -> DltResource:
+##    resource = create_dlt_source("v_Inventory_Parts_Ops")
+##     # Apply hints pour les colonnes décimales
+##    resource.apply_hints(
+##        columns={
+##            "Age_Stock": {"data_type": "decimal", "precision": 38, "scale": 6},
+##            "Qte_En_Stock": {"data_type": "decimal", "precision": 38, "scale": 6},
+##        }
+##    )
+##
+##    return resource
+def make_inventory_parts_ops_resource(logger):
+    @dlt.resource(
+        name="v_Inventory_Parts_Ops",
+        write_disposition="replace",
+    )
+    def get_inventory_parts_ops_bcp_data() -> DltResource:
+        result = extract_mssql_data(
+            mssql_table_name = "V_Inventory_Parts_Ops",
+            snowflake_table_name= "AI_V_INVENTORY_PARTS_OPS",
+            logger=logger
+        )
+        yield result
+    resource = get_inventory_parts_ops_bcp_data()
     resource.apply_hints(
         columns={
-            "Age_Stock": {"data_type": "decimal", "precision": 38, "scale": 6},
-            "Qte_En_Stock": {"data_type": "decimal", "precision": 38, "scale": 6},
+            "_dlt_id": {"nullable": True, "x-normalizer": {"skip": True}},
+            "_dlt_load_id": {"nullable": True, "x-normalizer": {"skip": True}},
         }
     )
 
     return resource
+def make_inventory_parts_ops_source(logger):
+    @dlt.source
+    def inventory_parts_ops_source():
+        return make_inventory_parts_ops_resource(logger)
 
-
-@dlt.source
-def inventory_parts_ops_source():
-    return get_inventory_parts_ops_data()
-
+    return inventory_parts_ops_source()
 ##### V_devis_dashboard_am
 @dlt.resource(
     name="V_devis_dashboard_am",

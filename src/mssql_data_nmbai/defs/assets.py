@@ -2,8 +2,10 @@ import dagster as dg
 from dagster import AssetExecutionContext, RetryPolicy
 from dagster_embedded_elt.dlt import DagsterDltResource, dlt_assets
 import dlt
-from mssql_data_nmbai.defs.dlt_mssql_source import equipment_source, facture_source, tiers_source, inventory_parts_ops_source, gcm_retour_donnees_olga_source##, devis_source, commande_source
+import logging
+from mssql_data_nmbai.defs.dlt_mssql_source import make_inventory_parts_ops_source,equipment_source, facture_source, tiers_source, gcm_retour_donnees_olga_source##, inventory_parts_ops_source, devis_source, commande_source
 #from mssql_data_nmbai.defs.load_bcp_copy_into import run_pipeline, Config
+from mssql_data_nmbai.defs.load_bcp_copy_into import Config, extract_mssql_data
 # Pipeline DLT
 pipeline = dlt.pipeline(
     pipeline_name="mssql_to_snowflake_pipeline",
@@ -84,8 +86,23 @@ def gcm_retour_donnees_olga_assets(context: dg.AssetExecutionContext, dlt: Dagst
         raise
 
 
+##@dlt_assets(
+##    dlt_source=inventory_parts_ops_source(),
+##    dlt_pipeline=pipeline,
+##    name="v_Inventory_Parts_Ops",
+##    group_name="data_for_nmbai",
+##    #retry_policy=retry_policy,
+##)
+##def inventory_parts_ops_assets(context: dg.AssetExecutionContext, dlt: DagsterDltResource):
+##    """Inventory Parts Ops from MSSQL"""
+##    try:
+##        yield from dlt.run(context=context)
+##    except Exception as e:
+##        context.log.error(f"❌ Inventory asset failed: {e}")
+##        raise
+
 @dlt_assets(
-    dlt_source=inventory_parts_ops_source(),
+    dlt_source=make_inventory_parts_ops_source(logging.getLogger(__name__)),
     dlt_pipeline=pipeline,
     name="v_Inventory_Parts_Ops",
     group_name="data_for_nmbai",
@@ -94,10 +111,26 @@ def gcm_retour_donnees_olga_assets(context: dg.AssetExecutionContext, dlt: Dagst
 def inventory_parts_ops_assets(context: dg.AssetExecutionContext, dlt: DagsterDltResource):
     """Inventory Parts Ops from MSSQL"""
     try:
-        yield from dlt.run(context=context)
+        dlt_source = make_inventory_parts_ops_source(context.log)
+        for resource in dlt_source.resources.values():
+            schema_columns = resource.columns or {}
+            nullable_patch = {
+                col_name: {**col_def, "nullable": True}
+                for col_name, col_def in schema_columns.items()
+            }
+            if nullable_patch:
+                resource.apply_hints(columns=nullable_patch)
+
+        yield from dlt.run(
+            context=context,
+            dlt_source=dlt_source,
+            loader_file_format="jsonl",
+        )
     except Exception as e:
         context.log.error(f"❌ Inventory asset failed: {e}")
         raise
+
+
 ###  Cet asset utilise bcp + copy into
 #@asset(
 #    name="vlinklocalisation_bcp_fast",

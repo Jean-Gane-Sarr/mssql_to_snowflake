@@ -5,7 +5,7 @@ from datetime import datetime
 import snowflake.connector
 from dotenv import load_dotenv
 import logging
-from config import Config, generate_snowflake_ddl 
+from mssql_data_nmbai.defs.config import Config, generate_snowflake_ddl 
 import os
 import subprocess
 import time
@@ -33,7 +33,7 @@ def get_snowflake_connection():
     )
 
 
-def create_file_format(cursor):
+def create_file_format(cursor, logger):
     """
     Créer le format de fichier CSV s'il n'existe pas déjà --- on pourrait aussi utiliser parquet à la place
     Équivalent: CREATE OR REPLACE FILE FORMAT...
@@ -56,7 +56,7 @@ def create_file_format(cursor):
     logger.info(f"✅ File format {Config.FILE_FORMAT_NAME} créé")
 
 
-def create_stage(cursor):
+def create_stage(cursor, logger):
     """
     Créer le stage interne s'il n'existe pas déjà dans le schéma
     Équivalent: CREATE OR REPLACE STAGE...
@@ -78,7 +78,8 @@ def create_snowflake_table(
     database: str,
     schema: str,
     mssql_table_name: str,
-    snowflake_table_name: str
+    snowflake_table_name: str, 
+    logger
 ) -> None:
     """
     Créer une table Snowflake avec schéma personnalisable
@@ -115,7 +116,7 @@ def create_snowflake_table(
 
 
 ### Créer format de fichier, stage et table dans snowflake==============
-def setup_snowflake(mssql_table_name: str, snowflake_table_name: str):
+def setup_snowflake(mssql_table_name: str, snowflake_table_name: str, logger):
     """
     Setup des objets Snowflake
     """
@@ -128,14 +129,15 @@ def setup_snowflake(mssql_table_name: str, snowflake_table_name: str):
     cursor = conn.cursor()
     
     try:
-        create_file_format(cursor)
-        create_stage(cursor)
+        create_file_format(cursor, logger)
+        create_stage(cursor, logger)
         create_snowflake_table(
             cursor, 
             "NEEMBA", 
             "EQUIPEMENT", 
             mssql_table_name,
-            snowflake_table_name
+            snowflake_table_name, 
+            logger
         )
         
     finally:
@@ -145,7 +147,7 @@ def setup_snowflake(mssql_table_name: str, snowflake_table_name: str):
 
 # Upload du fichier dans le stage de snowflake avec la commande PUT==============
 
-def upload_to_stage():
+def upload_to_stage(logger):
     """
     Upload du fichier vers le stage
     Équivalent: PUT file://... @STAGE AUTO_COMPRESS=TRUE
@@ -188,7 +190,7 @@ def upload_to_stage():
 
 # COPY INTO des données dans la table finale==============
 
-def copy_into_table(table_name: str):
+def copy_into_table(table_name: str, logger):
     """
     Chargement final avec COPY INTO
     Équivalent: COPY INTO table FROM @STAGE...
@@ -235,7 +237,7 @@ def copy_into_table(table_name: str):
             logger.info(f"   ✓ {file_name}: {rows_loaded:,} lignes")
         
         logger.info(f"✅ COPY INTO terminé en {duration:.2f}s")
-        logger.info(f"✅📊 Nombre de lignes chargées : {total_rows:,}")
+        logger.info(f"📊✅ Nombre de lignes chargées : {total_rows:,}")
         logger.info(f"📊❌ Nombre d'erreurs : {total_errors:,}")
         
         # Vérification finale

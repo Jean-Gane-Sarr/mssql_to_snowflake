@@ -219,7 +219,7 @@ class BCPExporter:
             raise
 
 
-def export_mssql_bcp(table_name: str, top_n: int = 10000000) -> bool:
+def export_mssql_bcp(table_name: str, logger, top_n: int = 10000000) -> bool:
     """Export BCP depuis SQL Server avec support WSL."""
     
     logger.info("=" * 80)
@@ -448,7 +448,7 @@ def extract_mssql_table_schema(table_name: str) -> List[Tuple[str, str]]:
             
             # Ajouter NOT NULL si nécessaire
             if is_nullable == 'NO':
-                snowflake_type += ' NOT NULL'
+                snowflake_type += ' NULL'#' NOT NULL'
             
             columns.append((col_name, snowflake_type))
             
