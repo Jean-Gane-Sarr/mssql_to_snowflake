@@ -260,58 +260,5 @@ def generate_snowflake_ddl(
     return ddl
 
 
-# ============================================================================
-# FONCTION HELPER POUR DAGSTER
-# ============================================================================
 
-def get_table_ddl_for_dagster(table_name: str, snowflake_table: str) -> str:
-    """
-    Helper pour obtenir le DDL dans Dagster
-    
-    Usage dans bcp_assets.py:
-        ddl = get_table_ddl_for_dagster(
-            "dbo.v_Inventory_Parts_Ops",
-            "AI_V_INVENTORY_PARTS_OPS"
-        )
-    """
-    return generate_snowflake_ddl(table_name, snowflake_table)
-
-
-# ============================================================================
-# CLI / TESTS
-# ============================================================================
-
-if __name__ == "__main__":
-    from dotenv import load_dotenv
-    
-    load_dotenv()
-    
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(levelname)s - %(message)s'
-    )
-    
-    ### Test 1: Extraction schéma
-    ##print("\n" + "=" * 80)
-    ##print("TEST 1: Extraction du schéma")
-    ##print("=" * 80 + "\n")
-    ##
-    ##schema = extract_mssql_table_schema("dbo.v_Inventory_Parts_Ops")
-    ##
-    ##print("\nSchéma extrait:")
-    ##for col_name, col_type in schema:
-    ##    print(f"  {col_name:30} {col_type}")
-    ##
-    # Test 2: Génération DDL
-    print("\n" + "=" * 80)
-    print("TEST Génération DDL Snowflake")
-    print("=" * 80 + "\n")
-    
-    ddl = generate_snowflake_ddl(
-        "dbo.v_Inventory_Parts_Ops",
-        "AI_V_INVENTORY_PARTS_OPS"
-    )
-    
-    print(ddl)
-    
    
