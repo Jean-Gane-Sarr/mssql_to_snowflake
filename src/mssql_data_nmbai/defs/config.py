@@ -505,6 +505,9 @@ def generate_snowflake_ddl(
     
     # Colonnes de la source
     for col_name, col_type in columns:
+        col_name = col_name.replace("é","e")
+        col_name = col_name.replace("è","e")
+        
         ddl_lines.append(f"    {col_name} {col_type},")
     
     # Enlever la dernière virgule
@@ -514,7 +517,7 @@ def generate_snowflake_ddl(
     
     ddl = "\n".join(ddl_lines)
     
-    logger.info(f"✅ DDL généré ({len(columns)} colonnes)")
+    logger.info(f"✅ DDL généré ({len(columns)} colonnes)\n {ddl}")
     
     return ddl
 

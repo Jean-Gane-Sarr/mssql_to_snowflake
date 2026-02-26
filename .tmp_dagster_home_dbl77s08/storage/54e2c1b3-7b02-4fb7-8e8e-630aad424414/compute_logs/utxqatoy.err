@@ -1,0 +1,29 @@
+[32m2026-02-26 12:12:27 +0000[0m - dagster - [34mDEBUG[0m - __ASSET_JOB - 54e2c1b3-7b02-4fb7-8e8e-630aad424414 - 2526138 - LOGS_CAPTURED - Started capturing logs in process (pid: 2526138).
+[32m2026-02-26 12:12:27 +0000[0m - dagster - [34mDEBUG[0m - __ASSET_JOB - 54e2c1b3-7b02-4fb7-8e8e-630aad424414 - 2526138 - v_Inventory_Parts_Ops - STEP_START - Started execution of step "v_Inventory_Parts_Ops".
+[32m2026-02-26 12:12:27 +0000[0m - dagster - [34mINFO[0m - __ASSET_JOB - 54e2c1b3-7b02-4fb7-8e8e-630aad424414 - v_Inventory_Parts_Ops - 
+================================================================================
+[32m2026-02-26 12:12:27 +0000[0m - dagster - [34mINFO[0m - __ASSET_JOB - 54e2c1b3-7b02-4fb7-8e8e-630aad424414 - v_Inventory_Parts_Ops - 🚀 PIPELINE MSSQL → SNOWFLAKE
+[32m2026-02-26 12:12:27 +0000[0m - dagster - [34mINFO[0m - __ASSET_JOB - 54e2c1b3-7b02-4fb7-8e8e-630aad424414 - v_Inventory_Parts_Ops - 📤➡️❄️  Méthode: BCP + COPY INTO
+[32m2026-02-26 12:12:27 +0000[0m - dagster - [34mINFO[0m - __ASSET_JOB - 54e2c1b3-7b02-4fb7-8e8e-630aad424414 - v_Inventory_Parts_Ops - ================================================================================
+
+[32m2026-02-26 12:12:27 +0000[0m - dagster - [34mINFO[0m - __ASSET_JOB - 54e2c1b3-7b02-4fb7-8e8e-630aad424414 - v_Inventory_Parts_Ops - ================================================================================
+[32m2026-02-26 12:12:27 +0000[0m - dagster - [34mINFO[0m - __ASSET_JOB - 54e2c1b3-7b02-4fb7-8e8e-630aad424414 - v_Inventory_Parts_Ops - 📤 Export BCP depuis SQL Server pour la table V_Inventory_Parts_Ops
+[32m2026-02-26 12:12:27 +0000[0m - dagster - [34mINFO[0m - __ASSET_JOB - 54e2c1b3-7b02-4fb7-8e8e-630aad424414 - v_Inventory_Parts_Ops - ================================================================================
+[32m2026-02-26 12:12:27 +0000[0m - dagster - [34mINFO[0m - __ASSET_JOB - 54e2c1b3-7b02-4fb7-8e8e-630aad424414 - v_Inventory_Parts_Ops - 🗑️  Fichier existant supprimé: /tmp/mssql_export.csv
+2026-02-26 12:12:27,911 - INFO - 🔧 BCPExporter initialisé:
+2026-02-26 12:12:27,911 - INFO -    Mode: Natif
+2026-02-26 12:12:27,911 - INFO -    BCP: bcp
+[32m2026-02-26 12:12:27 +0000[0m - dagster - [34mINFO[0m - __ASSET_JOB - 54e2c1b3-7b02-4fb7-8e8e-630aad424414 - v_Inventory_Parts_Ops - 🔄 Exécution BCP...
+2026-02-26 12:12:27,938 - INFO - 💻 Mode natif
+2026-02-26 12:12:27,938 - INFO - 🔄 Commande BCP: bcp SELECT TOP 10000000 * FROM V_Inventory_Parts_Ops WITH (NOLOCK) queryout /tmp/mssql_export.csv -c -C 65001 -t | -r 
+ -S *** -d *** -U *** -P ***
+2026-02-26 12:14:12,550 - INFO - ✅ Export BCP réussi: Durée 104.61s, Taille 32.31 MB
+[32m2026-02-26 12:14:12 +0000[0m - dagster - [34mINFO[0m - __ASSET_JOB - 54e2c1b3-7b02-4fb7-8e8e-630aad424414 - v_Inventory_Parts_Ops - ✅ Export BCP terminé en 104.61s
+[32m2026-02-26 12:14:12 +0000[0m - dagster - [34mINFO[0m - __ASSET_JOB - 54e2c1b3-7b02-4fb7-8e8e-630aad424414 - v_Inventory_Parts_Ops -    Temps BCP: 104.61s
+[32m2026-02-26 12:14:12 +0000[0m - dagster - [34mINFO[0m - __ASSET_JOB - 54e2c1b3-7b02-4fb7-8e8e-630aad424414 - v_Inventory_Parts_Ops -    Fichier: /tmp/mssql_export.csv
+[32m2026-02-26 12:14:12 +0000[0m - dagster - [34mINFO[0m - __ASSET_JOB - 54e2c1b3-7b02-4fb7-8e8e-630aad424414 - v_Inventory_Parts_Ops -    Taille: 32.31 MB
+[32m2026-02-26 12:14:12 +0000[0m - dagster - [34mINFO[0m - __ASSET_JOB - 54e2c1b3-7b02-4fb7-8e8e-630aad424414 - v_Inventory_Parts_Ops - ================================================================================
+[32m2026-02-26 12:14:12 +0000[0m - dagster - [34mINFO[0m - __ASSET_JOB - 54e2c1b3-7b02-4fb7-8e8e-630aad424414 - v_Inventory_Parts_Ops - 🔧 Setup Snowflake
+[32m2026-02-26 12:14:12 +0000[0m - dagster - [34mINFO[0m - __ASSET_JOB - 54e2c1b3-7b02-4fb7-8e8e-630aad424414 - v_Inventory_Parts_Ops - ================================================================================
+2026-02-26 12:14:12,664 - INFO - Snowflake Connector for Python Version: 4.3.0, Python Version: 3.12.3, Platform: Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39
+2026-02-26 12:14:12,665 - INFO - Connecting to GLOBAL Snowflake domain
