@@ -1,7 +1,3 @@
-"""
-Dagster Asset pour pipeline ultra-rapide
-"""
-
 from dagster import (
     asset, 
     AssetExecutionContext, 
